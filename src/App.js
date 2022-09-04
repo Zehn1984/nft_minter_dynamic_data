@@ -6,8 +6,7 @@ function App() {
   return (
     <div className="App">
       <main>
-        <Routes> 
-          
+        <Routes>           
           <Route path="/" element={<Minter />} /> 
         </Routes>        
       </main>

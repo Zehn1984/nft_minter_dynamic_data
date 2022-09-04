@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { ethers } from "ethers";
 
+localStorage.setItem("contract_address", "")
+localStorage.setItem("name", "")
+localStorage.setItem("symbol", "")
+localStorage.setItem("balanceOf", "")
+
 // Criando funcao principal que sera chamada pelo react no index.js para interagir com contrato
 const Minter = () => {
-
   // Declarando variaveis globais constante obrigatorias utilizando o ethersjs para acessar as funcoes posteriormente
   const provider = new ethers.providers.Web3Provider(window.ethereum)
   const abi = require("../../abiByteCode/abi.json")
