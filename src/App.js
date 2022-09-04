@@ -1,9 +1,16 @@
 import './App.css';
+import Minter from './pages/minter';
+import { Route, Routes } from "react-router-dom";
 
 function App() {
   return (
     <div className="App">
-      <h1>CarteirinhaNFT</h1>
+      <main>
+        <Routes> 
+          
+          <Route path="/" element={<Minter />} /> 
+        </Routes>        
+      </main>
     </div>
   );
 }

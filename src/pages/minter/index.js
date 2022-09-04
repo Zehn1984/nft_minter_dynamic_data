@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ethers } from "ethers";
 
 // Criando funcao principal que sera chamada pelo react no index.js para interagir com contrato
-const CallContract = () => {
+const Minter = () => {
 
   // Declarando variaveis globais constante obrigatorias utilizando o ethersjs para acessar as funcoes posteriormente
   const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -135,4 +135,4 @@ const CallContract = () => {
   );  
 }
 
-export default CallContract
+export default Minter
