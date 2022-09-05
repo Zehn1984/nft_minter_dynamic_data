@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { ethers } from "ethers";
 
-localStorage.setItem("contract_address", "")
-localStorage.setItem("name", "")
-localStorage.setItem("symbol", "")
-localStorage.setItem("balanceOf", "")
-
 // Criando funcao principal que sera chamada pelo react no index.js para interagir com contrato
 const Minter = () => {
+
+  if (!localStorage.getItem("contract_address")) {
+    localStorage.setItem("contract_address", "");
+    localStorage.setItem("balanceOf", "")
+    localStorage.setItem("wallet", "")
+  }
+
   // Declarando variaveis globais constante obrigatorias utilizando o ethersjs para acessar as funcoes posteriormente
   const provider = new ethers.providers.Web3Provider(window.ethereum)
   const abi = require("../../abiByteCode/abi.json")
@@ -17,8 +19,8 @@ const Minter = () => {
   let [wallet, setWallet] = useState(localStorage.getItem("wallet"))
   let [saldoInicial, setSaldoInicial] = useState(false)
   let [balance, setBalance] = useState("")
-  let [deployedContract, setDeployedContract] = useState(localStorage.getItem("contract_address"))
-  let [contractObject, setContractObject] = useState(new ethers.Contract(localStorage.getItem("contract_address"), abi, provider)) // ja comecamos com o ultimo contrato deployado na memoria
+  let [deployedContract, setDeployedContract] = useState(localStorage.getItem("contract_address") ? localStorage.getItem("contract_address") : "Faca o deploy para ter acesso a outras funcoes...")
+  let [contractObject, setContractObject] = useState(localStorage.getItem("contract_address") ? new ethers.Contract(localStorage.getItem("contract_address"), abi, provider) : "") // ja comecamos com o ultimo contrato deployado na memoria  
   let [balanceOf, setBalanceOf] = useState("")
   let [mintInput, setMintInput] = useState(wallet)
   let [conquistaInput, setConquistaInput] = useState("")
@@ -63,8 +65,6 @@ const Minter = () => {
     contractObject = await new ethers.Contract(deployedContract, abi, provider)
 
     localStorage.setItem("contract_address", await deployedContract)
-    localStorage.setItem("name", await contractObject.name())
-    localStorage.setItem("symbol", await contractObject.symbol())
     localStorage.setItem("balanceOf", await contractObject.balanceOf(wallet))
     //localStorage.setItem("lerHistoricoCarteirinha", await contractObject.lerHistoricoCarteirinha())
 
@@ -128,12 +128,16 @@ const Minter = () => {
       <input type="text" placeholder="Digite a conquista..." value={conquistaInput} onChange={aoDigitarConquista}></input>
       <br></br>
       <button onClick={adicionarConquista}>Adicionar Conquista</button>
+
+
       <p>{conquistaAdicionada ? "Conquista adicionada com sucesso!" : ""}</p>
 
       <button onClick={getHistorico}>Ver historico de conquistas</button><br/>
       <p>{String(historico)}</p>
+      <br></br>
 
-      <h1>Custo Total: {gastoTaxas ? "R$ " + (gastoTaxas * 0.90 * 5).toFixed(2) : 0}</h1>
+      <p>Custo Total: </p>
+      <h1>{gastoTaxas ? "R$ " + (gastoTaxas * 0.90 * 5).toFixed(2) : "R$ 0.00"}</h1>
 
     </div>
   );  
