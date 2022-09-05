@@ -4,10 +4,18 @@ import { ethers } from "ethers";
 // Criando funcao principal que sera chamada pelo react no index.js para interagir com contrato
 const Minter = () => {
 
-  if (!localStorage.getItem("contract_address")) {
-    localStorage.setItem("contract_address", "");
+  if (!localStorage.getItem("first_load")) {
+    localStorage.setItem("first_load", true)
+    localStorage.setItem("contract_address", "")
     localStorage.setItem("balanceOf", "")
-    localStorage.setItem("wallet", "")
+    localStorage.setItem("wallet", "")    
+  }
+
+  window.onload = function() {
+    if(!window.location.hash) {
+      window.location = window.location + '#loaded';
+      setTimeout(() => {window.location.reload()}, 1500)
+    }
   }
 
   // Declarando variaveis globais constante obrigatorias utilizando o ethersjs para acessar as funcoes posteriormente
@@ -19,7 +27,7 @@ const Minter = () => {
   let [wallet, setWallet] = useState(localStorage.getItem("wallet"))
   let [saldoInicial, setSaldoInicial] = useState(false)
   let [balance, setBalance] = useState("")
-  let [deployedContract, setDeployedContract] = useState(localStorage.getItem("contract_address") ? localStorage.getItem("contract_address") : "Faca o deploy para ter acesso a outras funcoes...")
+  let [deployedContract, setDeployedContract] = useState(localStorage.getItem("contract_address") ? localStorage.getItem("contract_address") : "")
   let [contractObject, setContractObject] = useState(localStorage.getItem("contract_address") ? new ethers.Contract(localStorage.getItem("contract_address"), abi, provider) : "") // ja comecamos com o ultimo contrato deployado na memoria  
   let [balanceOf, setBalanceOf] = useState("")
   let [mintInput, setMintInput] = useState(wallet)
@@ -27,19 +35,17 @@ const Minter = () => {
   let [conquistaAdicionada, setConquistaAdicionada] = useState("")
   let [historico, setHistorico] = useState("")
   let [gastoTaxas, setGastoTaxas] = useState(0)
+  let [firstTimePressed, setFirstTimePressed] = useState(false)
   
   // Conectar Carteira Metamask
   const connectMetamask = async () => {    
-    // Requisitando permissao ao usuario para conexao da metamask junto ao script e contrato    
-    provider.send("eth_requestAccounts", []);
-    signer = provider.getSigner(); // requisicao de assinatura para conectar na metamask, caso nao esteja conectado
-    localStorage.setItem("wallet", await signer.getAddress()) // captura a wallet em um DB local
+        // Requisitando permissao ao usuario para conexao da metamask junto ao script e contrato    
+    await provider.send("eth_requestAccounts", []);
+    signer = await provider.getSigner(); // requisicao de assinatura para conectar na metamask, caso nao esteja conectado
     setSigner(await signer) // atualiza estado do signer para conectado, assim podemos chamar as outras funcoes que exige assinatura
     setWallet(await signer.getAddress()) // Pega o endereco da carteira conectada
-    const balance_wei = await signer.getBalance()
-    balance = await ethers.utils.formatEther(balance_wei)
-    setSaldoInicial(balance)
     getSaldo()
+    localStorage.setItem("wallet", await signer.getAddress()) // captura a wallet em um DB local
   }
 
   // Executa a funcao de saldo para saber quantos Matic e CNFT tem na carteira
@@ -48,9 +54,17 @@ const Minter = () => {
     balance = await ethers.utils.formatEther(balance_wei) // converte de wei pra ether (divide por 1e18)
     localStorage.setItem("balance", await balance)
     setBalance(await balance)
-    setBalanceOf(await contractObject.balanceOf(wallet))
-    let taxas = parseFloat(saldoInicial) - parseFloat(await balance)
-    setGastoTaxas(taxas)
+    if (!firstTimePressed) {
+      saldoInicial = await ethers.utils.formatEther(balance_wei)
+      setSaldoInicial(await saldoInicial)
+      console.log(`Saldo inicial: R$ ${((await saldoInicial) * 0.90 * 5).toFixed(2)}`)      
+    }    
+    if (localStorage.getItem("contract_address") !== "") {
+      setBalanceOf(await contractObject.balanceOf(wallet))
+    }
+    let taxas = parseFloat(await saldoInicial) - parseFloat(await balance)
+    setGastoTaxas(await taxas)
+    setFirstTimePressed(true)
   }
   
   // Minta carteirinha e guarda hash do endereco em uma variavel
@@ -70,6 +84,7 @@ const Minter = () => {
 
     setDeployedContract(await deployedContract)
     setContractObject(await contractObject) // Agora ContractObject eh um objeto que interage com as funcoes do contrato. pra chamar a funcao de nome por exemplo basta usar contractObject.name()
+    setMintInput(wallet)
     getSaldo()
   }
 
@@ -78,7 +93,6 @@ const Minter = () => {
     const transaction = await contractObject.connect(signer).safeMint(mintInput) //executa a funcao de mint do contrato. Para funcoes que mudam o estado da blockchain, eh necessario uma assinatura confirmacao (signer)
     await transaction.wait()
     getSaldo()
-    //saldo_nft = await contractObject.balanceOf(textInput) // verifica se apos a mintagem, acrescentou 1 CNFT a carteira solicitada
   }
 
   const aoDigitarMint = (props) => {
@@ -105,7 +119,7 @@ const Minter = () => {
   return (
     <div className="App">
       <button onClick={connectMetamask}>
-        {saldoInicial ? "Conectado: " + String(wallet): "Conectar"}
+        {wallet ? "Conectado: " + String(wallet): "Conectar"}
       </button>
       <br></br>
       <br></br>
