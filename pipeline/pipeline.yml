@@ -1,0 +1,20 @@
+stages:
+- stage: Build
+  jobs:
+  - job: BuildJob
+    steps:
+    - script: echo Building
+- stage: Test
+  jobs:
+  - job: TestOnLinux
+    steps:
+    - script: echo Testing on Linux
+  - job: TestOnLinux2
+    steps:
+    - script: echo Testing on Linux2    
+- stage: Deploy
+  jobs:
+  - job: Deploy
+    steps:
+      - script: echo Deploying the code
+      - script: echo Deploying the code1
