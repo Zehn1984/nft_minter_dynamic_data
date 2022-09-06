@@ -11,3 +11,20 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.App {
+  margin: auto;
+  padding: 10px;
+
+}
+
+.div_carteirinha {
+  margin: auto;
+  padding: 10px;
+  width:40%;  
+  background-color: rgb(255, 255, 255);
+  align-self: flex-start;
+  border: 2px solid rgba(18, 141, 5, 0.761);
+  border-radius: 25px;
+
+}

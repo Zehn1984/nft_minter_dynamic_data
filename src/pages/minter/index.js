@@ -137,7 +137,11 @@ const Minter = () => {
 
   return (
     <div className="App">
-      <button onClick={connectMetamask}>
+            
+      <div className="div_carteirinha" >
+        <h2>Gerador Carteirinha NFT</h2>
+        
+        <button onClick={connectMetamask}>
         {wallet ? "Conectado: " + String(wallet): "Conectar"}
       </button>
       <br></br>
@@ -175,6 +179,16 @@ const Minter = () => {
 
       <p>Custo Total: </p>
       <h1>{gastoTaxas ? "R$ " + (gastoTaxas * 0.90 * 5).toFixed(2) : "R$ 0.00"}</h1>
+
+
+
+      </div>
+      
+      
+      
+      
+      
+      
 
     </div>
   );  
