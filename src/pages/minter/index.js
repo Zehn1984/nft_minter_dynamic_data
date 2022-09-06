@@ -85,14 +85,17 @@ const Minter = () => {
     setDeployedContract(await deployedContract)
     setContractObject(await contractObject) // Agora ContractObject eh um objeto que interage com as funcoes do contrato. pra chamar a funcao de nome por exemplo basta usar contractObject.name()
     setMintInput(wallet)
+    alert(`Contrato ${deployedContract} deployado com sucesso!`)
     getSaldo()
   }
 
   // Minta o NFT a uma carteira, ou seja, define um dono ao NFT.
   const mintNft = async () => {
-    const transaction = await contractObject.connect(signer).safeMint(mintInput) //executa a funcao de mint do contrato. Para funcoes que mudam o estado da blockchain, eh necessario uma assinatura confirmacao (signer)
-    await transaction.wait()
-    getSaldo()
+    if (deployedContract === "") {alert("Primeiro faca o deploy do contrato!")} else {
+      const transaction = await contractObject.connect(signer).safeMint(mintInput) //executa a funcao de mint do contrato. Para funcoes que mudam o estado da blockchain, eh necessario uma assinatura confirmacao (signer)
+      await transaction.wait()
+      getSaldo()
+    }
   }
 
   const aoDigitarMint = (props) => {
@@ -100,11 +103,14 @@ const Minter = () => {
   }
 
   const adicionarConquista = async () => {
-    const data = parseInt(`${new Date().getDate()}${new Date().getMonth()}${new Date().getFullYear()}`) // captura a data do momento para adicionar junto a blockchain nos parametros da funcao adicionarConquista
-    const transaction = await contractObject.connect(signer).adicionarConquistaHistorico(conquistaInput.toString(), data, 0)
-    await transaction.wait()
-    setConquistaAdicionada(true)
-    getSaldo()
+    if (deployedContract === "") {alert("Primeiro faca o deploy do contrato!")} else {
+      const data = parseInt(`${new Date().getDate()}${new Date().getMonth()}${new Date().getFullYear()}`) // captura a data do momento para adicionar junto a blockchain nos parametros da funcao adicionarConquista
+      const transaction = await contractObject.connect(signer).adicionarConquistaHistorico(conquistaInput.toString(), data, 0)
+      await transaction.wait()
+      alert("Conquista adicionada com sucesso!")
+      setConquistaAdicionada(true)
+      getSaldo()
+    }
   }
 
   const aoDigitarConquista = (props) => {
@@ -113,7 +119,15 @@ const Minter = () => {
 
   // Ler historico da carteirinha
   async function getHistorico() {
-    setHistorico(await contractObject.consultarHistorico())
+    if (deployedContract === "") {
+      alert("Primeiro faca o deploy do contrato!")
+    } 
+    else if (conquistaAdicionada === "") {
+      alert("Primeiro adicione uma conquista!")
+    }
+    else {
+      setHistorico(await contractObject.consultarHistorico())
+    }
   }
 
   return (
