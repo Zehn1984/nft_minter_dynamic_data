@@ -7,15 +7,15 @@ trigger:
 - master
  
 pool:
-  vmImage: ubuntu-latest
+  name: jimmyagent
+  demands:
+   - agent.name -equals vpsAgent
+
 # Set variables
 variables:
   uiSource: 'src'
   uiBuild: 'build'
   
-  serviceConnection: Azure subscription 1 (40a59f90-b176-4bfa-ace9-9630edebfd6b)
-  appServiceName: mvpWebApp
- 
 steps:
 - task: NodeTool@0
   inputs:
@@ -42,11 +42,4 @@ steps:
     ArtifactName: 'drop'
     publishLocation: 'Container'
  
-#- stage: Deploy
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: 'Azure subscription 1 (40a59f90-b176-4bfa-ace9-9630edebfd6b)'
-    appType: 'webAppLinux'
-    appName: 'mvpWebApp'
-#   package: '$(System.DefaultWorkingDirectory)/**/*.zip'
-    package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+
