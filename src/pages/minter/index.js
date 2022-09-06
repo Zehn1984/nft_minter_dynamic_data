@@ -149,6 +149,8 @@ const Minter = () => {
       <button onClick={deployContract}>Deployar Contrato</button>
       <br></br>
       <a href={"https://polygonscan.com/address/" + String(deployedContract)} target="_blank">{deployedContract ? "Ultimo contrato deployado: " + String(deployedContract) : ""}</a>
+      <br></br>
+      <br></br>
       <a href={"https://polygonscan.com/tx/" + String(txHashDeploy)} target="_blank">{txHashDeploy ? "Comprovante (TxHash): " + String(txHashDeploy) : ""}</a>
       <br></br>
       <br></br>
