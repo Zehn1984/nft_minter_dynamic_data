@@ -1,20 +1,39 @@
-stages:
-- stage: Build
-  jobs:
-  - job: BuildJob
-    steps:
-    - script: echo Building
-- stage: Test
-  jobs:
-  - job: TestOnLinux
-    steps:
-    - script: echo Testing on Linux
-  - job: TestOnLinux2
-    steps:
-    - script: echo Testing on Linux2    
-- stage: Deploy
-  jobs:
-  - job: Deploy
-    steps:
-      - script: echo Deploying the code
-      - script: echo Deploying the code1
+trigger:
+- master
+
+variables:
+  uiSource: 'src'
+  uiBuild: 'build'
+pool:
+  name: jimmyagent
+  demands:
+    - agent.name -equals JIMMYASUS
+  vmImage: ubuntu-latest
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '16.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    pushd $(uiSource)
+    npm install
+    npm run build
+    popd
+  displayName: 'npm install and build'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(uiBuild)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+    
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+
