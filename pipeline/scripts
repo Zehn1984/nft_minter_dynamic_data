@@ -1,0 +1,8 @@
+#Build img docker
+
+docker build -f Dockerfile -t mvpcarteirinha:1.0 .
+
+
+#execute img docker
+
+docker run -it -d -p 80:80 --rm mvpcarteirinha:1.0
