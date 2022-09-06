@@ -127,3 +127,18 @@ steps:
     appName: '$(appServiceName)'
     appType: 'webApp'
     package: '$(System.ArtifactsDirectory)/$(Build.BuildId).zip'
+
+
+    --
+
+
+    
+#- stage: Deploy
+- task: AzureWebApp@1
+  displayName: 'Deploy to App Service'
+  inputs:
+    azureSubscription: '$(serviceConnection)'
+    appName: '$(appServiceName)'
+    appType: 'webApp'
+    package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+
