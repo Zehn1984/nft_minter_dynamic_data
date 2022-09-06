@@ -22,3 +22,108 @@ stages:
   - job: Deploy
     steps:
       - script: echo Deploying the code
+
+#####
+
+trigger:
+- master
+
+variables:
+  uiSource: 'src'
+  uiBuild: 'build'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '16.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    pushd $(uiSource)
+    npm install
+    npm run build
+    popd
+  displayName: 'npm install and build'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(uiBuild)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+    
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+
+######
+
+
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+ 
+trigger:
+- master
+ 
+pool:
+  vmImage: 'windows-latest'
+# Set variables
+variables:
+  directory: react-azure-demo
+  stage: development
+  serviceConnection: REACT_AZURE_DEMO
+  appServiceName: reactazuredemo
+ 
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+ 
+- script: 
+    npm install
+  displayName: 'npm install'
+  workingDirectory: $(directory)
+ 
+- script: 
+    set "REACT_APP_STAGE=$(stage)" && npm run build
+  displayName: 'npm build'
+  workingDirectory: $(directory)
+ 
+- task: CopyFiles@2
+  displayName: 'Copy files'
+  inputs:
+    sourceFolder: '$(directory)/build' 
+    Contents: '**/*'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    cleanTargetFolder: true
+ 
+- task: ArchiveFiles@2
+  displayName: 'Archive files'
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    replaceExistingArchive: true
+ 
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Build Artifacts'
+  inputs: 
+    pathtoPublish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+ 
+- task: AzureWebApp@1
+  displayName: 'Deploy to App Service'
+  inputs:
+    azureSubscription: '$(serviceConnection)'
+    appName: '$(appServiceName)'
+    appType: 'webApp'
+    package: '$(System.ArtifactsDirectory)/$(Build.BuildId).zip'
