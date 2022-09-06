@@ -4,10 +4,8 @@ trigger:
 variables:
   uiSource: 'src'
   uiBuild: 'build'
+  
 pool:
-  name: jimmyagent
-  demands:
-    - agent.name -equals JIMMYASUS
   vmImage: ubuntu-latest
 
 steps:
