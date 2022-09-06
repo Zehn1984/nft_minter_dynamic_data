@@ -76,7 +76,7 @@ const Minter = () => {
       const factory = new ethers.ContractFactory(abi, ContractByteCode, signer) //para deploy, eh necessario a abi, o bytecode e a assinatura da metamask conectada
       const contrato = await factory.deploy(); //executa a funcao de deploy de fato
       const dados_deploy = await contrato.deployTransaction.wait();
-      console.log(`Contrato deployado com sucesso da blockchain, segue o endereco do contrato: ${dados_deploy.contractAddress} e o txhash da transacao: ${dados_deploy.hash}`)
+      console.log(`Contrato deployado com sucesso da blockchain! Endereco do contrato: ${dados_deploy.contractAddress} e o txhash da transacao: ${dados_deploy.hash}`)
       deployedContract = await dados_deploy.contractAddress
       contractObject = await new ethers.Contract(deployedContract, abi, provider)
 
@@ -143,7 +143,7 @@ const Minter = () => {
       <br></br>
 
       <p>{"Matic: " + String(balance) + " | R$ " + parseFloat(balance * 0.90 * 5).toFixed(2)}</p>
-      <p>CNFT: </p>
+      <br/>Quantidade CNFT:
       <h1>{String(balanceOf)}</h1>
 
       <button onClick={deployContract}>Deployar Contrato</button>
