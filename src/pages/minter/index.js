@@ -36,6 +36,7 @@ const Minter = () => {
   let [historico, setHistorico] = useState("")
   let [gastoTaxas, setGastoTaxas] = useState(0)
   let [firstTimePressed, setFirstTimePressed] = useState(false)
+  let [txHashDeploy, setTxHashDeploy] = useState("")
   
   // Conectar Carteira Metamask
   const connectMetamask = async () => {    
@@ -69,24 +70,27 @@ const Minter = () => {
   
   // Minta carteirinha e guarda hash do endereco em uma variavel
   const deployContract = async () =>  {
-    // copiando e colando bytecode da polygonscan (necessario apenas para fazer deploy) - o bytecode eh o codigo fonte do contrato transformado em linguagem de maquina, que eh a linguagem que o EVM executa
-    const ContractByteCode = require("../../abiByteCode/byteCode.json")
-    const factory = new ethers.ContractFactory(abi, ContractByteCode, signer) //para deploy, eh necessario a abi, o bytecode e a assinatura da metamask conectada
-    const contrato = await factory.deploy(); //executa a funcao de deploy de fato
-    const dados_deploy = await contrato.deployTransaction.wait();
-    console.log(`Contrato deployado com sucesso da blockchain, segue o endereco do contrato: ${dados_deploy.contractAddress}`)
-    deployedContract = await dados_deploy.contractAddress
-    contractObject = await new ethers.Contract(deployedContract, abi, provider)
+    if (wallet === "") {alert("Primeiro conecte sua carteira!")} else {
+      // copiando e colando bytecode da polygonscan (necessario apenas para fazer deploy) - o bytecode eh o codigo fonte do contrato transformado em linguagem de maquina, que eh a linguagem que o EVM executa
+      const ContractByteCode = require("../../abiByteCode/byteCode.json")
+      const factory = new ethers.ContractFactory(abi, ContractByteCode, signer) //para deploy, eh necessario a abi, o bytecode e a assinatura da metamask conectada
+      const contrato = await factory.deploy(); //executa a funcao de deploy de fato
+      const dados_deploy = await contrato.deployTransaction.wait();
+      console.log(`Contrato deployado com sucesso da blockchain, segue o endereco do contrato: ${dados_deploy.contractAddress} e o txhash da transacao: ${dados_deploy.hash}`)
+      deployedContract = await dados_deploy.contractAddress
+      contractObject = await new ethers.Contract(deployedContract, abi, provider)
 
-    localStorage.setItem("contract_address", await deployedContract)
-    localStorage.setItem("balanceOf", await contractObject.balanceOf(wallet))
-    //localStorage.setItem("lerHistoricoCarteirinha", await contractObject.lerHistoricoCarteirinha())
+      localStorage.setItem("contract_address", await deployedContract)
+      localStorage.setItem("balanceOf", await contractObject.balanceOf(wallet))
+      //localStorage.setItem("lerHistoricoCarteirinha", await contractObject.lerHistoricoCarteirinha())
 
-    setDeployedContract(await deployedContract)
-    setContractObject(await contractObject) // Agora ContractObject eh um objeto que interage com as funcoes do contrato. pra chamar a funcao de nome por exemplo basta usar contractObject.name()
-    setMintInput(wallet)
-    alert(`Contrato ${deployedContract} deployado com sucesso!`)
-    getSaldo()
+      setDeployedContract(await deployedContract)
+      setContractObject(await contractObject) // Agora ContractObject eh um objeto que interage com as funcoes do contrato. pra chamar a funcao de nome por exemplo basta usar contractObject.name()
+      setMintInput(wallet)
+      setTxHashDeploy(await dados_deploy.transactionHash)
+      alert(`Contrato ${deployedContract} deployado com sucesso!`)
+      getSaldo()
+    }
   }
 
   // Minta o NFT a uma carteira, ou seja, define um dono ao NFT.
@@ -107,8 +111,9 @@ const Minter = () => {
       const data = parseInt(`${new Date().getDate()}${new Date().getMonth()}${new Date().getFullYear()}`) // captura a data do momento para adicionar junto a blockchain nos parametros da funcao adicionarConquista
       const transaction = await contractObject.connect(signer).adicionarConquistaHistorico(conquistaInput.toString(), data, 0)
       await transaction.wait()
+      console.log(await transaction.hash)
       alert("Conquista adicionada com sucesso!")
-      setConquistaAdicionada(true)
+      setConquistaAdicionada(await transaction.hash)
       getSaldo()
     }
   }
@@ -136,15 +141,16 @@ const Minter = () => {
         {wallet ? "Conectado: " + String(wallet): "Conectar"}
       </button>
       <br></br>
-      <br></br>
 
-      <button onClick={getSaldo}>SALDO</button>
       <p>{"Matic: " + String(balance) + " | R$ " + parseFloat(balance * 0.90 * 5).toFixed(2)}</p>
       <p>CNFT: </p>
       <h1>{String(balanceOf)}</h1>
 
       <button onClick={deployContract}>Deployar Contrato</button>
-      <div>{"Ultimo Contrato deployado: " + String(deployedContract)}</div>
+      <br></br>
+      <a href={"https://polygonscan.com/address/" + String(deployedContract)} target="_blank">{deployedContract ? "Ultimo contrato deployado: " + String(deployedContract) : ""}</a>
+      <a href={"https://polygonscan.com/tx/" + String(txHashDeploy)} target="_blank">{txHashDeploy ? "Comprovante (TxHash): " + String(txHashDeploy) : ""}</a>
+      <br></br>
       <br></br>
 
       <input type="text" placeholder="Digite a carteira para o mint..." value={mintInput} onChange={aoDigitarMint}></input>
@@ -156,9 +162,10 @@ const Minter = () => {
       <input type="text" placeholder="Digite a conquista..." value={conquistaInput} onChange={aoDigitarConquista}></input>
       <br></br>
       <button onClick={adicionarConquista}>Adicionar Conquista</button>
-
-
-      <p>{conquistaAdicionada ? "Conquista adicionada com sucesso!" : ""}</p>
+      <br></br>
+      <a href={"https://polygonscan.com/tx/" + String(conquistaAdicionada)} target="_blank">{conquistaAdicionada ? "Comprovante (TxHash): " + String(conquistaAdicionada) : ""}</a>
+      <br></br>
+      <br></br>
 
       <button onClick={getHistorico}>Ver historico de conquistas</button><br/>
       <p>{String(historico)}</p>
