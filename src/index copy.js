@@ -137,55 +137,61 @@ const Minter = () => {
 
   return (
     <div className="App">
-            
-      <div className="div_carteirinha" >
-        <h2>Gerador Carteirinha NFT</h2>
-        
-        <div className="div_carteirinha_mint" > 
-          <button onClick={connectMetamask}>
-          {wallet ? "Conectado: " + String(wallet): "Conectar"}
-          </button>
-          
-          <p>{"Matic: " + String(balance) + " | R$ " + parseFloat(balance * 0.90 * 5).toFixed(2)}</p>
-          <br/>Quantidade CNFT:
-          <h1>{String(balanceOf)}</h1>
-        </div>  
-        
-        <br></br>
+      
+      
+      <div className="news-feed" >
+            <h2>Gerador Carteirinha NFT</h2>
 
-          <button onClick={deployContract}>Deployar Contrato</button>
-          <br></br>
-          <p>Ultimo contrato deployado: </p><a href={"https://polygonscan.com/address/" + String(deployedContract)} target="_blank">{deployedContract ? "Ultimo contrato deployado: " + String(deployedContract) : ""}</a>
-          <br></br>
-          <p>Comprovante: </p> <a href={"https://polygonscan.com/tx/" + String(txHashDeploy)} target="_blank">{txHashDeploy ? "Comprovante (TxHash): " + String(txHashDeploy) : ""}</a>
-          <br></br>
-          <p>Carteira Destino Mint: </p>
-          <input className="input_contrato" type="text" placeholder="Digite a carteira para o mint..." value={mintInput} onChange={aoDigitarMint}></input>
-          <br></br>
-          <br></br>
-          <button onClick={mintNft}>Mint CNFT</button>
-          <br></br>
-          <br></br>
 
-          <div className="div_carteirinha_mint" >
-          <br></br>            
-            <input type="text" placeholder="Digite a conquista..." value={conquistaInput} onChange={aoDigitarConquista}></input>
-            <br></br>
-            <button onClick={adicionarConquista}>Adicionar Conquista</button>
-            <br></br>
-            <a href={"https://polygonscan.com/tx/" + String(conquistaAdicionada)} target="_blank">{conquistaAdicionada ? "Comprovante (TxHash): " + String(conquistaAdicionada) : ""}</a>
-            <br></br>
-            <br></br>
+            <button onClick={connectMetamask}>
+        {wallet ? "Conectado: " + String(wallet): "Conectar"}
+      </button>
+      <br></br>
 
-            <button onClick={getHistorico}>Ver historico de conquistas</button><br/>
-            <p>{String(historico)}</p>
-            <br></br>
-          </div>
-          <p>Custo Total: </p>
-          <h1>{gastoTaxas ? "R$ " + (gastoTaxas * 0.90 * 5).toFixed(2) : "R$ 0.00"}</h1>
+      <p>{"Matic: " + String(balance) + " | R$ " + parseFloat(balance * 0.90 * 5).toFixed(2)}</p>
+      <br/>Quantidade CNFT:
+      <h1>{String(balanceOf)}</h1>
+
+      <button onClick={deployContract}>Deployar Contrato</button>
+      <br></br>
+      <a href={"https://polygonscan.com/address/" + String(deployedContract)} target="_blank">{deployedContract ? "Ultimo contrato deployado: " + String(deployedContract) : ""}</a>
+      <br></br>
+      <br></br>
+      <a href={"https://polygonscan.com/tx/" + String(txHashDeploy)} target="_blank">{txHashDeploy ? "Comprovante (TxHash): " + String(txHashDeploy) : ""}</a>
+      <br></br>
+      <br></br>
+
+      <input type="text" placeholder="Digite a carteira para o mint..." value={mintInput} onChange={aoDigitarMint}></input>
+      <br></br>
+      <button onClick={mintNft}>Mint CNFT</button>
+      <br/>
+      <br/>
+      
+      <input type="text" placeholder="Digite a conquista..." value={conquistaInput} onChange={aoDigitarConquista}></input>
+      <br></br>
+      <button onClick={adicionarConquista}>Adicionar Conquista</button>
+      <br></br>
+      <a href={"https://polygonscan.com/tx/" + String(conquistaAdicionada)} target="_blank">{conquistaAdicionada ? "Comprovante (TxHash): " + String(conquistaAdicionada) : ""}</a>
+      <br></br>
+      <br></br>
+
+      <button onClick={getHistorico}>Ver historico de conquistas</button><br/>
+      <p>{String(historico)}</p>
+      <br></br>
+
+      <p>Custo Total: </p>
+      <h1>{gastoTaxas ? "R$ " + (gastoTaxas * 0.90 * 5).toFixed(2) : "R$ 0.00"}</h1>
+
+
 
       </div>
       
+      
+      
+      
+      
+      
+
     </div>
   );  
 }
