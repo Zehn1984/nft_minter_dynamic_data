@@ -195,9 +195,9 @@ const Minter = () => {
         <br></br>
         <button onClick={deployContract}>Deployar Contrato</button>
         <br></br>
-        <p>Ultimo contrato deployado: </p><a href={"https://polygonscan.com/address/" + String(deployedContract)} target="_blank">{deployedContract ? "Ultimo contrato deployado: " + String(deployedContract) : ""}</a>
+        <p>Ultimo contrato deployado: </p> <a className="comprovantes" href={"https://polygonscan.com/address/" + String(deployedContract)} target="_blank">{deployedContract ? String(deployedContract) : ""}</a>
         <br></br>
-        <p>Comprovante: </p> <a href={"https://polygonscan.com/tx/" + String(txHashDeploy)} target="_blank">{txHashDeploy ? "Comprovante (TxHash): " + String(txHashDeploy) : ""}</a>
+        <p>Comprovante (txHash): </p> <a className="comprovantes" href={"https://polygonscan.com/tx/" + String(txHashDeploy)} target="_blank">{txHashDeploy ? String(txHashDeploy) : ""}</a>
         <br></br>
         <p>Carteira Destino Mint: </p>
         <input className="input_contrato" type="text" placeholder="Digite a carteira para o mint..." value={mintInput} onChange={aoDigitarMint}></input>
@@ -205,16 +205,17 @@ const Minter = () => {
         <br></br>
         <button onClick={mintNft}>Mint CNFT</button>
         <br></br>
-        <p>Comprovante: </p> <a href={"https://polygonscan.com/tx/" + String(txHashMint)} target="_blank">{txHashMint ? "Comprovante (TxHash): " + String(txHashMint) : ""}</a>
+        <p>Comprovante (txHash): </p> <a className="comprovantes" href={"https://polygonscan.com/tx/" + String(txHashMint)} target="_blank">{txHashMint ? String(txHashMint) : ""}</a>
         <br></br>
         <br></br>
       
         <br></br>            
         <input type="text" placeholder="              Digite a conquista..." value={conquistaInput} onChange={aoDigitarConquista}></input>
         <br></br>
+        <br></br>
         <button onClick={adicionarConquista}>Adicionar Conquista</button>
         <br></br>
-        <a href={"https://polygonscan.com/tx/" + String(txHashConquista)} target="_blank">{txHashConquista ? "Comprovante (TxHash): " + String(txHashConquista) : ""}</a>
+        <p>Comprovante (txHash): </p> <a className="comprovantes" href={"https://polygonscan.com/tx/" + String(txHashConquista)} target="_blank">{txHashConquista ? String(txHashConquista) : ""}</a>
         <br></br>
         <br></br>
 
