@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 // Criando funcao principal que sera chamada pelo react no index.js para interagir com contrato
 const Minter = () => {
 
+  // Caso seja um novo usuario, define um valor padrao para os localStorages para nao bugar o codigo com retornos nulos
   if (!localStorage.getItem("first_load")) {
     localStorage.setItem("first_load", true)
     localStorage.setItem("contract_address", "")
@@ -11,6 +12,8 @@ const Minter = () => {
     localStorage.setItem("wallet", "")    
   }
 
+  // Devido a um tempo de delay (bug), entre setar o localStorage e carregar a metamask
+  // Foi criado essa parte do codigo para dar refresh na pagina apos 1,5 segs, para conectar a metamask com o localstorage, ja setado
   window.onload = function() {
     if(!window.location.hash) {
       window.location = window.location + '#loaded';
@@ -18,9 +21,9 @@ const Minter = () => {
     }
   }
 
-  // Declarando variaveis globais constante obrigatorias utilizando o ethersjs para acessar as funcoes posteriormente
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
-  const abi = require("../../abiByteCode/abi.json")
+  // Declarando variaveis globais constantes obrigatorias utilizando o ethersjs para acessar as funcoes posteriormente
+  const provider = new ethers.providers.Web3Provider(window.ethereum) // Especifica que o provedor (walletApp) utilizado sera a Metamask
+  const abi = require("../../abiByteCode/abi.json") // Carrega o codigo fonte do contrato solidity em formato Json
 
   // Criando useState() react para retornar na tela a informacao coletada da blockchain
   let [signer, setSigner] = useState(provider.getSigner())
@@ -46,7 +49,7 @@ const Minter = () => {
     setSigner(await signer) // atualiza estado do signer para conectado, assim podemos chamar as outras funcoes que exige assinatura
     setWallet(await signer.getAddress()) // Pega o endereco da carteira conectada
     getSaldo()
-    localStorage.setItem("wallet", await signer.getAddress()) // captura a wallet em um DB local
+    localStorage.setItem("wallet", await signer.getAddress()) // captura a wallet em um DB local (cookie/cache)
   }
 
   // Executa a funcao de saldo para saber quantos Matic e CNFT tem na carteira
@@ -101,23 +104,25 @@ const Minter = () => {
       getSaldo()
     }
   }
-
+  
+  // Captura o que eh digitado no campo de texto do mint e joga para a variavel mintInput para usar no backend
   const aoDigitarMint = (props) => {
     setMintInput(props.target.value)
   }
 
+  // Funcao que adiciona conquista, ou qualquer outra informacao, dentro da blockchain
   const adicionarConquista = async () => {
     if (deployedContract === "") {alert("Primeiro faca o deploy do contrato!")} else {
       const data = parseInt(`${new Date().getDate()}${new Date().getMonth()}${new Date().getFullYear()}`) // captura a data do momento para adicionar junto a blockchain nos parametros da funcao adicionarConquista
-      const transaction = await contractObject.connect(signer).adicionarConquistaHistorico(conquistaInput.toString(), data, 0)
+      const transaction = await contractObject.connect(signer).adicionarConquistaHistorico(conquistaInput.toString(), data, 0) // chama a funcao de fato, passa os parametros e salva em um objeto
       await transaction.wait()
-      console.log(await transaction.hash)
       alert("Conquista adicionada com sucesso!")
       setConquistaAdicionada(await transaction.hash)
       getSaldo()
     }
   }
 
+  // Captura o que eh digitado no campo de texto de adicionar conquista para usar no backend
   const aoDigitarConquista = (props) => {
     setConquistaInput(props.target.value)
   }
