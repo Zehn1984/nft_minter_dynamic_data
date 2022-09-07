@@ -160,11 +160,18 @@ const Minter = () => {
   }
 
   const dadosAdicionais = async () => {
-    const nomeToken = await contractObject.name()
-    const symbol = await contractObject.symbol()
-    const devWallet = await contractObject.owner()
-    const donoToken = await contractObject.ownerOf(0)
-    alert(`Nome do token: ${nomeToken}.\nSimbolo: ${symbol}\nDevWallet: ${devWallet}\nDono: ${donoToken}`)
+    if (deployedContract !== "") {      
+      const nomeToken = await contractObject.name()
+      const symbol = await contractObject.symbol()
+      const devWallet = await contractObject.owner()
+      let donoToken = "FACA O MINT PARA DEFINIR O DONO"
+      if (txHashMint !== "") {
+        donoToken = await contractObject.ownerOf(0)
+      }      
+      alert(`Nome do token: ${nomeToken}.\nSimbolo: ${symbol}\nDevWallet: ${devWallet}\nDono: ${donoToken}`)
+    } else {
+      alert("Faca o deploy do contrato primeiro!")
+    }
   }
 
   // Retorna o que vai aparecer no front end usando JSX (mistura de JS com HTML)
