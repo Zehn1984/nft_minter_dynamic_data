@@ -224,7 +224,7 @@ const Minter = () => {
             <p>{String(historico)}</p>
             <br></br>
           </div>
-          <p>Custo Total: </p>
+          <p>Custo Total Acumulado: </p>
           <h1>{gastoTaxas ? "R$ " + (gastoTaxas * 0.90 * 5).toFixed(2) : "R$ 0.00"}</h1>
           <br></br>
 
