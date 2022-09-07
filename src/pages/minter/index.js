@@ -8,7 +8,9 @@ const Minter = () => {
     localStorage.setItem("first_load", true)
     localStorage.setItem("contract_address", "")
     localStorage.setItem("balanceOf", "")
-    localStorage.setItem("wallet", "")    
+    localStorage.setItem("wallet", "")
+    localStorage.setItem("txHashConquista", "")
+    localStorage.setItem("txHashDeploy", "")  
   }
 
   window.onload = function() {
@@ -32,11 +34,11 @@ const Minter = () => {
   let [balanceOf, setBalanceOf] = useState("")
   let [mintInput, setMintInput] = useState(wallet)
   let [conquistaInput, setConquistaInput] = useState("")
-  let [conquistaAdicionada, setConquistaAdicionada] = useState("")
+  let [txHashConquista, setTxHashConquista] = useState(localStorage.getItem("txHashConquista"))
   let [historico, setHistorico] = useState("")
   let [gastoTaxas, setGastoTaxas] = useState(0)
   let [firstTimePressed, setFirstTimePressed] = useState(false)
-  let [txHashDeploy, setTxHashDeploy] = useState("")
+  let [txHashDeploy, setTxHashDeploy] = useState(localStorage.getItem("txHashDeploy"))
   
   // Conectar Carteira Metamask
   const connectMetamask = async () => {    
@@ -68,6 +70,8 @@ const Minter = () => {
     setFirstTimePressed(true)
   }
   
+
+
   // Minta carteirinha e guarda hash do endereco em uma variavel
   const deployContract = async () =>  {
     if (wallet === "") {alert("Primeiro conecte sua carteira!")} else {
@@ -76,13 +80,13 @@ const Minter = () => {
       const factory = new ethers.ContractFactory(abi, ContractByteCode, signer) //para deploy, eh necessario a abi, o bytecode e a assinatura da metamask conectada
       const contrato = await factory.deploy(); //executa a funcao de deploy de fato
       const dados_deploy = await contrato.deployTransaction.wait();
-      console.log(`Contrato deployado com sucesso da blockchain! Endereco do contrato: ${dados_deploy.contractAddress} e o txhash da transacao: ${dados_deploy.hash}`)
+      console.log(`Contrato deployado com sucesso da blockchain, segue o endereco do contrato: ${dados_deploy.contractAddress} e o txhash da transacao: ${dados_deploy.hash}`)
       deployedContract = await dados_deploy.contractAddress
       contractObject = await new ethers.Contract(deployedContract, abi, provider)
 
       localStorage.setItem("contract_address", await deployedContract)
       localStorage.setItem("balanceOf", await contractObject.balanceOf(wallet))
-      //localStorage.setItem("lerHistoricoCarteirinha", await contractObject.lerHistoricoCarteirinha())
+      localStorage.setItem("txHashDeploy", await dados_deploy.transactionHash)
 
       setDeployedContract(await deployedContract)
       setContractObject(await contractObject) // Agora ContractObject eh um objeto que interage com as funcoes do contrato. pra chamar a funcao de nome por exemplo basta usar contractObject.name()
@@ -98,6 +102,7 @@ const Minter = () => {
     if (deployedContract === "") {alert("Primeiro faca o deploy do contrato!")} else {
       const transaction = await contractObject.connect(signer).safeMint(mintInput) //executa a funcao de mint do contrato. Para funcoes que mudam o estado da blockchain, eh necessario uma assinatura confirmacao (signer)
       await transaction.wait()
+      alert(`Mint do CNFT ${deployedContract} feito na carteira ${mintInput} com sucesso!`)
       getSaldo()
     }
   }
@@ -113,7 +118,8 @@ const Minter = () => {
       await transaction.wait()
       console.log(await transaction.hash)
       alert("Conquista adicionada com sucesso!")
-      setConquistaAdicionada(await transaction.hash)
+      localStorage.setItem("txHashConquista", await transaction.hash)
+      setTxHashConquista(await transaction.hash)
       getSaldo()
     }
   }
@@ -123,11 +129,11 @@ const Minter = () => {
   }
 
   // Ler historico da carteirinha
-  async function getHistorico() {
+  const getHistorico = async () => {
     if (deployedContract === "") {
       alert("Primeiro faca o deploy do contrato!")
     } 
-    else if (conquistaAdicionada === "") {
+    else if (txHashConquista === "") {
       alert("Primeiro adicione uma conquista!")
     }
     else {
@@ -135,57 +141,58 @@ const Minter = () => {
     }
   }
 
+  // Reseta cache do localStorage e dar reload na pagina
+  const resetarCache = async () => {
+    localStorage.clear()
+    window.location.reload()
+  }
+
   return (
     <div className="App">
-            
-      <div className="div_carteirinha" >
-        <h2>Gerador Carteirinha NFT</h2>
-        
-        <div className="div_carteirinha_mint" > 
-          <button onClick={connectMetamask}>
-          {wallet ? "Conectado: " + String(wallet): "Conectar"}
-          </button>
-          
-          <p>{"Matic: " + String(balance) + " | R$ " + parseFloat(balance * 0.90 * 5).toFixed(2)}</p>
-          <br/>Quantidade CNFT:
-          <h1>{String(balanceOf)}</h1>
-        </div>  
-        
-        <br></br>
+      <button onClick={connectMetamask}>
+        {wallet ? "Conectado: " + String(wallet): "Conectar"}
+      </button>
+      <br></br>
 
-          <button onClick={deployContract}>Deployar Contrato</button>
-          <br></br>
-          <p>Ultimo contrato deployado: </p><a href={"https://polygonscan.com/address/" + String(deployedContract)} target="_blank">{deployedContract ? "Ultimo contrato deployado: " + String(deployedContract) : ""}</a>
-          <br></br>
-          <p>Comprovante: </p> <a href={"https://polygonscan.com/tx/" + String(txHashDeploy)} target="_blank">{txHashDeploy ? "Comprovante (TxHash): " + String(txHashDeploy) : ""}</a>
-          <br></br>
-          <p>Carteira Destino Mint: </p>
-          <input className="input_contrato" type="text" placeholder="Digite a carteira para o mint..." value={mintInput} onChange={aoDigitarMint}></input>
-          <br></br>
-          <br></br>
-          <button onClick={mintNft}>Mint CNFT</button>
-          <br></br>
-          <br></br>
+      <p>{"Matic: " + String(balance) + " | R$ " + parseFloat(balance * 0.90 * 5).toFixed(2)}</p>
+      <p>CNFT: </p>
+      <h1>{String(balanceOf)}</h1>
 
-          <div className="div_carteirinha_mint" >
-          <br></br>            
-            <input type="text" placeholder="Digite a conquista..." value={conquistaInput} onChange={aoDigitarConquista}></input>
-            <br></br>
-            <button onClick={adicionarConquista}>Adicionar Conquista</button>
-            <br></br>
-            <a href={"https://polygonscan.com/tx/" + String(conquistaAdicionada)} target="_blank">{conquistaAdicionada ? "Comprovante (TxHash): " + String(conquistaAdicionada) : ""}</a>
-            <br></br>
-            <br></br>
+      <button onClick={deployContract}>Deployar Contrato</button>
+      <br></br>
+      <br></br>
+      <a href={"https://polygonscan.com/address/" + String(deployedContract)} target="_blank">{deployedContract ? "Contrato: " + String(deployedContract) : ""}</a>
+      <br></br>
+      <br></br>
+      <a href={"https://polygonscan.com/tx/" + String(txHashDeploy)} target="_blank">{txHashDeploy ? "Comprovante (TxHash): " + String(txHashDeploy) : ""}</a>
+      <br></br>
+      <br></br>
 
-            <button onClick={getHistorico}>Ver historico de conquistas</button><br/>
-            <p>{String(historico)}</p>
-            <br></br>
-          </div>
-          <p>Custo Total: </p>
-          <h1>{gastoTaxas ? "R$ " + (gastoTaxas * 0.90 * 5).toFixed(2) : "R$ 0.00"}</h1>
-
-      </div>
+      <input type="text" placeholder="Digite a carteira para o mint..." value={mintInput} onChange={aoDigitarMint}></input>
+      <br></br>
+      <button onClick={mintNft}>Mint CNFT</button>
+      <br/>
+      <br/>
       
+      <input type="text" placeholder="Digite a conquista..." value={conquistaInput} onChange={aoDigitarConquista}></input>
+      <br></br>
+      <button onClick={adicionarConquista}>Adicionar Conquista</button>
+      <br></br>
+      <a href={"https://polygonscan.com/tx/" + String(txHashConquista)} target="_blank">{txHashConquista ? "Comprovante (TxHash): " + String(txHashConquista) : ""}</a>
+      <br></br>
+      <br></br>
+
+      <button onClick={getHistorico}>Ver historico de conquistas</button><br/>
+      <p>{String(historico)}</p>
+      <br></br>
+
+      <p>Custo Total: </p>
+      <h1>{gastoTaxas ? "R$ " + (gastoTaxas * 0.90 * 5).toFixed(2) : "R$ 0.00"}</h1>
+      <br></br>
+
+      <button onClick={resetarCache}>Resetar Cache</button><br/>
+      <br></br>
+
     </div>
   );  
 }
