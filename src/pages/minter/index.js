@@ -140,6 +140,13 @@ const Minter = () => {
     }
   }
 
+  // Reseta o cache/cookies localStorage e da refresh na pagina
+  const resetCache = () => {
+    localStorage.clear()
+    window.location.reload()
+  }
+
+  // Retorna o que vai aparecer no front end usando JSX (mistura de JS com HTML)
   return (
     <div className="App">
             
@@ -188,6 +195,10 @@ const Minter = () => {
           </div>
           <p>Custo Total: </p>
           <h1>{gastoTaxas ? "R$ " + (gastoTaxas * 0.90 * 5).toFixed(2) : "R$ 0.00"}</h1>
+          <br></br>
+          
+          <button onClick={resetCache}>Limpar cache</button><br/>
+          <br></br>
 
       </div>
       
@@ -195,4 +206,5 @@ const Minter = () => {
   );  
 }
 
+//exporta essa funcao gigante por padrao, para poder ser chamada como um componente react na pagina App.
 export default Minter
