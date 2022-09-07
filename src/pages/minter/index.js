@@ -89,7 +89,7 @@ const Minter = () => {
       const factory = new ethers.ContractFactory(abi, ContractByteCode, signer) //para deploy, eh necessario a abi, o bytecode e a assinatura da metamask conectada
       const contrato = await factory.deploy(); //executa a funcao de deploy de fato
       const dados_deploy = await contrato.deployTransaction.wait();
-      console.log(`Contrato deployado com sucesso da blockchain! Endereco do contrato: ${dados_deploy.contractAddress} e o txhash da transacao: ${dados_deploy.transactionHash}`)
+      console.log(`Contrato deployado com sucesso da blockchain! Endereco do contrato: ${dados_deploy.contractAddress} e o txhash da transacao: ${dados_deploy.transactionash}`)
       deployedContract = await dados_deploy.contractAddress
       contractObject = await new ethers.Contract(deployedContract, abi, provider)
 
@@ -159,6 +159,14 @@ const Minter = () => {
     window.location.reload()
   }
 
+  const dadosAdicionais = async () => {
+    const nomeToken = await contractObject.name()
+    const symbol = await contractObject.symbol()
+    const devWallet = await contractObject.owner()
+    const donoToken = await contractObject.ownerOf(0)
+    alert(`Nome do token: ${nomeToken}.\nSimbolo: ${symbol}\nDevWallet: ${devWallet}\nDono: ${donoToken}`)
+  }
+
   // Retorna o que vai aparecer no front end usando JSX (mistura de JS com HTML)
   // Basicamente, JSX vc escreve em HTML e quando precisa chamar alguma codigo em JS vc evoca os brackets {}
   return (
@@ -211,6 +219,9 @@ const Minter = () => {
           </div>
           <p>Custo Total: </p>
           <h1>{gastoTaxas ? "R$ " + (gastoTaxas * 0.90 * 5).toFixed(2) : "R$ 0.00"}</h1>
+          <br></br>
+
+          <button onClick={dadosAdicionais}>Dados adicionais</button><br/>
           <br></br>
           
           <button onClick={resetCache}>Limpar cache</button><br/>
