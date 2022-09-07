@@ -181,7 +181,7 @@ const Minter = () => {
     <div className="App">
             
       <div className="div_carteirinha" >
-        <h1>Gerador Carteirinha NFT</h1>
+        <h1>Sócio Torcedor 2.0</h1>
         
         <div className="div_carteirinha_mint" > 
           <button onClick={connectMetamask}>
@@ -193,17 +193,17 @@ const Minter = () => {
         </div>  
         
         <br></br>
-        <button onClick={deployContract}>Deployar Contrato</button>
+        <button onClick={deployContract}>Criar Contrato</button>
         <br></br>
-        <p>Ultimo contrato deployado: </p> <a className="comprovantes" href={"https://polygonscan.com/address/" + String(deployedContract)} target="_blank">{deployedContract ? String(deployedContract) : ""}</a>
+        <p>Último contrato criado: </p> <a className="comprovantes" href={"https://polygonscan.com/address/" + String(deployedContract)} target="_blank">{deployedContract ? String(deployedContract) : ""}</a>
         <br></br>
         <p>Comprovante (txHash): </p> <a className="comprovantes" href={"https://polygonscan.com/tx/" + String(txHashDeploy)} target="_blank">{txHashDeploy ? String(txHashDeploy) : ""}</a>
         <br></br>
-        <p>Carteira Destino Mint: </p>
+        <p>Carteira Destino: </p>
         <input className="input_contrato" type="text" placeholder="Digite a carteira para o mint..." value={mintInput} onChange={aoDigitarMint}></input>
         <br></br>
         <br></br>
-        <button onClick={mintNft}>Mint CNFT</button>
+        <button onClick={mintNft}>Vincular CNFT</button>
         <br></br>
         <p>Comprovante (txHash): </p> <a className="comprovantes" href={"https://polygonscan.com/tx/" + String(txHashMint)} target="_blank">{txHashMint ? String(txHashMint) : ""}</a>
         <br></br>
