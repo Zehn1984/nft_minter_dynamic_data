@@ -1,9 +1,15 @@
 import './App.css';
+import Minter from './pages/minter';
+import { Route, Routes } from "react-router-dom";
 
 function App() {
   return (
     <div className="App">
-      <p>Teste React</p>
+      <main>
+        <Routes>           
+          <Route path="/" element={<Minter />} /> 
+        </Routes>        
+      </main>
     </div>
   );
 }

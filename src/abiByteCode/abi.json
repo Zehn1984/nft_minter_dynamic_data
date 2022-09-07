@@ -1,11 +1,4 @@
-import { useState } from 'react';
-import { ethers } from "ethers";
-
-function CallContract() {
-  let [nome, setNome] = useState("")
-
-  const carteirinhaNFTAddress = "0x738467359AC00967e12293e2bb07bCEE97E8171b";
-  const carteirinhaNFTABI = [
+[
     {
       "inputs": [],
       "stateMutability": "nonpayable",
@@ -544,19 +537,4 @@ function CallContract() {
       "stateMutability": "nonpayable",
       "type": "function"
     }
-  ]
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const carteirinhaNFT = new ethers.Contract(carteirinhaNFTAddress, carteirinhaNFTABI, provider);
-
-  async function getNome() {
-     setNome(await carteirinhaNFT.name())
-  }
-  return (
-    <div className="App">
-      <div>{nome}</div>
-      <button onClick={getNome}>Adicionar</button>
-    </div>
-  );
-}
-
-export default CallContract;
+]

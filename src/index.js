@@ -1,16 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import CallContract from './CallContract';
-import Contador from './Contador';
-import ReactAxios from './ReactAxios'
+import reportWebVitals from "./reportWebVitals";
+import { BrowserRouter } from "react-router-dom";
+import './index.css'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <BrowserRouter>
     <App />
-    <Contador />
-    <ReactAxios />
-    <CallContract />
-  </React.StrictMode>
+  </BrowserRouter>,
 );
+
+reportWebVitals();
