@@ -160,6 +160,7 @@ const Minter = () => {
     window.location.reload()
   }
 
+  /* // Botao Dados Adicionais - REMOVIDO - RENATO PEDIU
   const dadosAdicionais = async () => {
     if (deployedContract !== "") {      
       const nomeToken = await contractObject.name()
@@ -174,12 +175,12 @@ const Minter = () => {
       alert("Faca o deploy do contrato primeiro!")
     }
   }
+  */
 
   // Retorna o que vai aparecer no front end usando JSX (mistura de JS com HTML)
   // Basicamente, JSX vc escreve em HTML e quando precisa chamar alguma codigo em JS vc evoca os brackets {}
   return (
-    <div className="App">
-            
+    <div className="App">            
       <div className="div_carteirinha" >
         <h1>Sócio Torcedor 2.0</h1>
         
@@ -190,14 +191,13 @@ const Minter = () => {
           <p>{"Matic: " + String(balance) + " | R$ " + parseFloat(balance * 0.90 * 5).toFixed(2)}</p>
           <br/>Quantidade CNFT:
           <h1>{String(balanceOf)}</h1>
-        </div>  
-        
+        </div>         
         <br></br>
         <button onClick={deployContract}>Criar Contrato</button>
         <br></br>
         <p>Último contrato criado: </p> <a className="comprovantes" href={"https://polygonscan.com/address/" + String(deployedContract)} target="_blank">{deployedContract ? String(deployedContract) : ""}</a>
         <br></br>
-        <p>Comprovante (txHash): </p> <a className="comprovantes" href={"https://polygonscan.com/tx/" + String(txHashDeploy)} target="_blank">{txHashDeploy ? String(txHashDeploy) : ""}</a>
+        <p>Comprovante: </p> <a className="comprovantes" href={"https://polygonscan.com/tx/" + String(txHashDeploy)} target="_blank">{txHashDeploy ? String(txHashDeploy) : ""}</a>
         <br></br>
         <p>Carteira Destino: </p>
         <input className="input_contrato" type="text" placeholder="Digite a carteira para o mint..." value={mintInput} onChange={aoDigitarMint}></input>
@@ -205,7 +205,7 @@ const Minter = () => {
         <br></br>
         <button onClick={mintNft}>Vincular CNFT</button>
         <br></br>
-        <p>Comprovante (txHash): </p> <a className="comprovantes" href={"https://polygonscan.com/tx/" + String(txHashMint)} target="_blank">{txHashMint ? String(txHashMint) : ""}</a>
+        <p>Comprovante: </p> <a className="comprovantes" href={"https://polygonscan.com/tx/" + String(txHashMint)} target="_blank">{txHashMint ? String(txHashMint) : ""}</a>
         <br></br>
         <br></br>
       
@@ -215,7 +215,7 @@ const Minter = () => {
         <br></br>
         <button onClick={adicionarConquista}>Adicionar Conquista</button>
         <br></br>
-        <p>Comprovante (txHash): </p> <a className="comprovantes" href={"https://polygonscan.com/tx/" + String(txHashConquista)} target="_blank">{txHashConquista ? String(txHashConquista) : ""}</a>
+        <p>Comprovante: </p> <a className="comprovantes" href={"https://polygonscan.com/tx/" + String(txHashConquista)} target="_blank">{txHashConquista ? String(txHashConquista) : ""}</a>
         <br></br>
         <br></br>
 
@@ -228,15 +228,15 @@ const Minter = () => {
           <h1>{gastoTaxas ? "R$ " + (gastoTaxas * 0.90 * 5).toFixed(2) : ""}</h1>
           <br></br>
 
+          {/* BOTAO REMOVIDO - RENATO PEDIU
           <button onClick={dadosAdicionais}>Dados adicionais</button><br/>
           <br></br>
+          */}
           
           <button onClick={resetCache}>Limpar cache</button><br/>
           <br></br>
         </div>
-
-      </div>
-      
+      </div>      
     </div>
   );  
 }
